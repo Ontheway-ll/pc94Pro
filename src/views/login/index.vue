@@ -7,8 +7,8 @@
       <div class="title">
 <img src="../../assets/img/logo_index.png" alt="">
       </div>
-      <!-- 表单 绑定model属性，绑定rules属性（表单验证规则） -->
-      <el-form :model="loginForm" :rules="loginRules" style="margin-top:20px">
+      <!-- 表单 绑定model属性，绑定rules属性（表单验证规则） ref给el-form一个属性 -->
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" style="margin-top:20px">
         <!-- 表单容器,prop要绑定的字段名 -->
         <el-form-item prop="mobile">
           <!-- 表单域  v-model 双向绑定-->
@@ -28,7 +28,7 @@
         <!-- 登录按钮 -->
         <el-form-item>
           <!-- 按钮 -->
-          <el-button style="width:100%" type="primary">登录</el-button>
+          <el-button @click="login" style="width:100%" type="primary">登录</el-button>
         </el-form-item>
         </el-form>
     </el-card>
@@ -41,6 +41,8 @@
 //   在data中定义表单数据对象，绑定到e-form上的model上
 //   需要在data中定义loginRules变量,绑定到el-form的rules属性上
 //   需要将表单中组件 双向绑定 v-model 我们的表单数据
+// 2 表单自动校验
+// 3 表单手动校验
 export default {
   data () {
     return {
@@ -76,6 +78,25 @@ export default {
         }]// 是否勾选规则
       }
     }
+  },
+  methods: {
+    login () {
+    // this.$refs.loginForm获取的是el-form对象实例
+    //   this.$refs.loginForm.validate(function (isOK) {
+    //     if (isOK) {
+    //       console.log('校验通过')
+    //     } else {
+    //       console.log('校验未通过')
+    //     }
+    //   })
+    // 第二种方法，promise
+      this.$refs.loginForm.validate().then(() => {
+        // 如果成功通过 校验就会到达 then
+        // 通过校验之后 应该做什么事 -> 应该调用登录接口 看看手机号是否正常
+        //   this.$axios.get/post/delete/put
+      })
+    }
+
   }
 }
 </script>
