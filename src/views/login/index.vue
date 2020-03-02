@@ -52,7 +52,28 @@ export default {
       },
       // 定义表单验证规则
       loginRules: {
-
+        mobile: [
+          { required: true, message: '您的手机号不能为空' }, {
+            pattern: /^1[3-9]\d{9}$/, // 正则表达式
+            message: '您的手机号不正确'
+          }
+        ], // 手机号验证规则
+        code: [{ required: true, message: '您的验证码不能为空' }, {
+          pattern: /^\d{6}$/,
+          message: '验证码是6位数'
+        }
+        ], // 验证码验证规则
+        checked: [{
+          validator: function (rule, value, callback) {
+          // rule是当前的校验规则
+          // value是当前的要校验的字段的值
+          // calllback是一个回调函数 不论成功或者失败都要执行
+          // 成功执行callback 失败执行 callback(new Error('错误信息'))
+          // 我们认为 如果 value 为true 就表示 校验成功 如果value 为false就表示校验失败
+          // new Error(错误信息) 就是我们提示的错误信息
+            value ? callback() : callback(new Error('您必须同意我们条款'))
+          }
+        }]// 是否勾选规则
       }
     }
   }
