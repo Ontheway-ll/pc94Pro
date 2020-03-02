@@ -94,6 +94,29 @@ export default {
         // 如果成功通过 校验就会到达 then
         // 通过校验之后 应该做什么事 -> 应该调用登录接口 看看手机号是否正常
         //   this.$axios.get/post/delete/put
+        // 第二种方法axios方法传入一个对象
+        this.$axios({
+          url: '/authorizations', // 请求地址
+          // params: {}, // 指的是url参数 参数会拼接到 url地址上面  常常说的 get参数，如果是空的不需要写
+          data: this.loginForm, // body请求体参数 常用于 post /put /patch
+          //  第二种写法，data：{...this.logForm,checked:null}
+          // ...把loginform的参数拷贝到这个对象里，后面的去替换前面参数
+          // api里body参数里不需要第三个参数checked
+          method: 'post'// 请求类型 post/get/delete/put/patch 默认值是get类型 可全大写 可全小写
+        }).then(result => {
+          // 成功 之后打印结果
+          // 把钥匙放在兜里 也就是把token存于 本地缓存
+          // console.log(result.data)
+          // user-token,相当于key
+          window.localStorage.setItem('user-token', result.data.data.token)
+          // 跳到主页
+          this.$router.push('/home')// push 和 router-link类似 to属性 可以直接是字符串 也可以是对象
+        }).catch(() => {
+          // 提示消息
+          // 第一种用法
+          this.$message({ message: '用户名或者密码错误', type: 'error' })
+          // this.$message.error('用户名或者密码错误')
+        })
       })
     }
 
