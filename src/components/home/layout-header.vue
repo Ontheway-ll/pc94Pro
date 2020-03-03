@@ -1,6 +1,6 @@
 <template>
    <!-- elementUI布局组件 el-row 和 el-col -->
-    <el-row class='layout-header'>
+    <el-row type='flex' align="middle" class='layout-header'>
     <!-- 等分为两列  为什么是:span="12"-->
     <el-col class="left" :span="12">
          <!-- 图标 -->

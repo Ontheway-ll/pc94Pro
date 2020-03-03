@@ -21,13 +21,9 @@
 </template>
 
 <script>
-import LayoutAside from '@/components/home/layout-aside'// 引入
-import LayoutHeader from '@/components/home/layout-header'
+
 export default {
-  components: { // 组件名和组件对象
-    'layout-aside': LayoutAside,
-    'layout-header': LayoutHeader
-  }
+
 }
 </script>
 
