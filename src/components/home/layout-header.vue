@@ -13,16 +13,16 @@
         <el-col class="right" :span="12">
             <!--  align属性设置垂直对齐方式  justify设置 水平对齐属性    -->
          <el-row type='flex' justify="end" align="middle">
-        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1583259050447&di=b13623a9981dacccb34fa104a568a7c0&imgtype=0&src=http%3A%2F%2Fa0.att.hudong.com%2F78%2F52%2F01200000123847134434529793168.jpg" alt="">
-        <el-dropdown trigger="click">
+        <img :src="userInfo.photo" alt="">
+        <el-dropdown trigger="click" @command='clickMenu'>
             <!-- 显示内容 -->
-            <span class="hand">点击我</span>
+            <span class="hand">{{userInfo.name}}</span>
             <!-- 下拉内容需要做具名插槽dropdown  el-dropdown-menu是专门做下拉的组件 -->
             <el-dropdown-menu slot="dropdown" >
                 <!-- 下拉选项 -->
-                <el-dropdown-item>个人信息</el-dropdown-item>
-                <el-dropdown-item>git地址</el-dropdown-item>
-                <el-dropdown-item>退出</el-dropdown-item>
+                <el-dropdown-item command='info'>个人信息</el-dropdown-item>
+                <el-dropdown-item command='git'>git地址</el-dropdown-item>
+                <el-dropdown-item command='lgout'>退出</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
         </el-row>
@@ -32,7 +32,43 @@
 
 <script>
 export default {
+  data () {
+    return {
+      userInfo: {
 
+      }// 用户个人信息
+    }
+  },
+  methods: {
+    clickMenu (command) {
+      // 分三种情况
+      if (command === 'info') {
+        // 点击了个人信息
+      } else if (command === 'git') {
+        window.location.href = 'https://github.com/Ontheway-ll/pc94Pro'
+      } else {
+        //   退出系统，删除token，跳转登录页面
+        window.localStorage.removeItem('user-token')
+        this.$router.push('/login')// 编程式导航
+      }
+    }
+  },
+  created () { // 获取用户个人信息
+    // 从缓存中调用token，从兜里拿钥匙
+    const token = localStorage.getItem('user-token')
+    this.$axios({
+      url: '/user/profile',
+      // 没有body和query参数
+      method: 'get', // 不写默认get请求
+      headers: {
+        Authorization: `Bearer ${token}`// 格式要求Bearerhe token 拼接，Bearer后面有空格
+      }// 请求头参数Header中放置请求头参数
+    }).then(result => {
+      // 如果加载成功，将数据赋值给userInfo
+    //   debugger
+      this.userInfo = result.data.data
+    })
+  }
 }
 </script>
 
