@@ -26,6 +26,14 @@
 
          </el-table-column>
   </el-table>
+  <!-- 放置分页组件 -->
+  <el-row style="height:80px" type="flex" align="middle" justify="center">
+  <el-pagination  background layout="prev, pager, next"
+  :total="page.total"
+  :current-page="page.currentpage"
+  :page-size="page.pageSize"
+  @current-change="changePage"></el-pagination>
+  </el-row>
   </el-card>
 </template>
 
@@ -33,14 +41,29 @@
 export default {
   data () {
     return {
+      // 分页参数单独放置一个对象 让数据更清晰
+      page: {
+        total: 0, // 默认总数是0
+        currentpage: 1, // 默认的页码 是第一个页  决定了当前页码是第几页
+        pageSize: 10// page-size的默认值是10
+      },
       list: []
     }
   },
-  methods: { // 获取评论数据
-    getComment () {
+  methods: {
+    changePage (newPage) {
+      // newPage是最新的切换页码
+      // 将最新的页码 设置给 page下的当前页码
+      this.page.currentpage = newPage// 赋值最新页码
+      // 重新拉去数据
+      this.getComment()
+    },
+    getComment () { // 获取评论数据
       this.$axios({
         url: '/articles', // 请求地址
         params: {
+          page: this.page.currentpage, // 查1页
+          per_page: this.page.pageSize, // 查10条
           response_type: 'comment'// 此参数用来控制获取数据类型
         }
         // query参数应该在哪个位置传，axios
@@ -49,6 +72,7 @@ export default {
       }).then(result => {
         //   将返回结果中的数组给list
         this.list = result.data.results
+        this.page.total = result.data.total_count// 将总数赋值
       })
     },
     formatterBool (row, column, cellValue, index) {
@@ -67,7 +91,12 @@ export default {
           url: '/comments/status',
           method: 'put',
           params: {
-            article_id: row.id
+            // 为什么评论会失败 就是因为 原来 给你传了 9152 你回传了 9200
+            // 所以我们用大数字包 保证 9152不被转化 就可以使用原来的功能
+            // article_id: row.id.toString() // 要求参数的文章id 将 BigNumber类型转化成字符串
+            // 前端传字符串到后端 只要和原数字一致  后端会自动将字符串转成大数字
+            // 只需要保证 id 和传过来的id一致就行
+            article_id: row.id.toString()// 要求参数的文字ID
           },
           data: { // body参数
             allow_comment: !row.comment_status
