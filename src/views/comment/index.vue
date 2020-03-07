@@ -11,10 +11,20 @@
        <!-- 使用el-table-column作为列 -->
        <!-- prop 表示显示的字段 label表示表头 -->
          <el-table-column  prop="title" label="标题" width="600"></el-table-column>
-         <el-table-column  prop="comment_status" label="评论状态"></el-table-column>
+  <!--给el-table-column一个formatter属性，用来格式化内容，因为table不显示布尔值  -->
+         <el-table-column :formatter="formatterBool" prop="comment_status" label="评论状态"></el-table-column>
          <el-table-column  prop="total_comment_count" label="总评论数"></el-table-column>
          <el-table-column  prop="fans_comment_count" label="粉丝评论数"></el-table-column>
-         <el-table-column   label="操作"></el-table-column>
+         <el-table-column   label="操作">
+             <!-- el-table-column组件 在插槽中传出了 row $index store column -->
+             <!-- 插槽 -> 作用域插槽 ->子组件中的数据 通过插槽传出 slot-scope接收  row(行数据) $index(索引)  -->
+             <!-- 可以放组件 -->
+             <template slot-scope="obj">
+                 <el-button type="text" size="small">修改</el-button>
+                 <el-button @click=" openOrclose(obj.row)" type="text" size="small">{{obj.row.comment_status?'关闭':'打开'}}评论</el-button>
+             </template>
+
+         </el-table-column>
   </el-table>
   </el-card>
 </template>
@@ -40,7 +50,41 @@ export default {
         //   将返回结果中的数组给list
         this.list = result.data.results
       })
+    },
+    formatterBool (row, column, cellValue, index) {
+      //  row 代表当前的一行数据
+      // column 代表当前的列信息
+      // cellValue 代表当前单元格的值
+      // index 代表当前的索引
+      // 该函数需要返回一个值 用来显示
+      return cellValue ? '正常' : '关闭'
+    },
+    openOrclose (row) {
+      const mess = row.comment_status ? '关闭' : '打开'
+      // $confirm 也支持 promise 点击确定会进入到then 点击取消会进入到catch
+      this.$confirm(`是否${mess}评论`, '提示').then(() => {
+        this.$axios({
+          url: '/comments/status',
+          method: 'put',
+          params: {
+            article_id: row.id
+          },
+          data: { // body参数
+            allow_comment: !row.comment_status
+          }
+
+        }).then(() => {
+          // 如果评论成功
+          this.$message.success(`${mess}评论成功`)
+          //   重新拉取数据
+          this.getComment()
+        }).catch(() => {
+          // 如果评论失败
+          this.$message.error(`${mess}评论失败`)
+        })
+      })
     }
+
   },
   created () {
     //   在钩子函数中获取数据
