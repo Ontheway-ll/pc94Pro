@@ -1,7 +1,7 @@
 <template>
 <!-- 在最外层放一个大容器 -->
 <el-container>
-     <el-aside style="width:230px">
+     <el-aside style="width:230px;background:#2e2f32">
     <layout-aside>左侧导航组件</layout-aside>
      </el-aside>
      <!-- 右侧嵌套一个容器 -->

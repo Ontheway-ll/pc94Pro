@@ -108,7 +108,7 @@ export default {
           // 把钥匙放在兜里 也就是把token存于 本地缓存
           // console.log(result.data)
           // user-token,相当于key
-          window.localStorage.setItem('user-token', result.data.data.token)
+          window.localStorage.setItem('user-token', result.data.token)
           // 跳到主页
           this.$router.push('/home')// push 和 router-link类似 to属性 可以直接是字符串 也可以是对象
         }).catch(() => {
