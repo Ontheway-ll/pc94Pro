@@ -3,7 +3,6 @@ import VueRouter from 'vue-router'
 import Home from '@/views/home'// 用加些方式代替原有方式
 import Login from '@/views/login'
 import SecondHome from '@/views/home/SecondHome'
-
 Vue.use(VueRouter)
 
 const routes = [
@@ -28,6 +27,10 @@ const routes = [
       {
         path: 'material',
         component: () => import('@/views/material')
+      },
+      {
+        path: 'articles',
+        component: () => import('@/views/articles')
       }
     ]
   }, {
