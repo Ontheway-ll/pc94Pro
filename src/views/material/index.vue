@@ -40,6 +40,20 @@
           </div>
         </el-tab-pane>
       </el-tabs>
+      <!-- 放置一个公共的分页组件 -->
+      <el-row type="flex" justify="center" align="middle" style='height:80px'>
+<!-- 放置一个分页组件
+      total 总条数
+      current-page 当前页码
+      page-size每页多少条-->
+      <el-pagination background
+      :total="page.total"
+      :current-page="page.currentPage"
+      :page-size="page.pageSize"
+      layout="prev,pager,next"
+      @current-change="changePage">
+</el-pagination>
+      </el-row>
   </el-card>
 </template>
 
@@ -48,28 +62,45 @@ export default {
   data () {
     return {
       activeName: 'all', // 默认选择
-      list: []// list接收全部素材的数据
+      list: [], // list接收全部素材的数据
+      page: { // 专门的对象存放分页信息
+        currentPage: 1, // 默认第一页
+        total: 0, // 总页数
+        pageSize: 8 // 每页多少条
+      }
     }
   },
   methods: {
-
+    // 改方法会在页面切换改变时执行
+    changePage (newPage) {
+      // 传入一个新页
+      this.page.currentPage = newPage// 将新叶赋值给页码数据
+      this.getMaterial()// 获取数据
+    },
+    // 获取素材数据
     getMaterial () {
       this.$axios({
         url: '/user/images', // 请求地址
         method: 'get',
         params: {
-          // fasle不能写死，
-          collect: this.activeName === 'collect' // false // 请求的全部素材query参数也就是get参数
+          // fasle不能写死，如果为true获取收藏素材，false为全部素材
+          collect: this.activeName === 'collect', // false // 请求的全部素材query参数也就是get参数
+          page: this.page.currentPage, // 取页码变量中的值，页码变量一变，获取的数量跟着变
+          per_page: this.page.pageSize// 获取每页的数量
         },
         data: {}// body参数data参数
       }).then(result => {
         // 将返回的数据赋值到data中的数据
         // debugger
         this.list = result.data.results
+        // 将总数赋值给total变量
+        this.page.total = result.data.total_count
+        // 总数，全部素材和收藏素材的总数
       })
     },
     // 切换页签事件
     changeTab () {
+      this.page.currentPage = 1// 将页码重置为第一页，分类换了，数据变了
       // alert(this.activeName)
       // 根据activeName来判断获取的是全部还是收藏
       // activeName === 'all' 获取所有的素材  activeName = 'collect' 获取收藏素材

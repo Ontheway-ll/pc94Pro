@@ -14,7 +14,7 @@
             <!--  align属性设置垂直对齐方式  justify设置 水平对齐属性    -->
          <el-row type='flex' justify="end" align="middle">
         <!-- <img :src="userInfo.photo" alt=""> -->
-        <img src="http://img4.imgtn.bdimg.com/it/u=1008200690,2377767314&fm=26&gp=0.jpg" alt="">
+        <img src="http://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E5%9B%BE%E7%89%87%E4%B8%AD%E5%9B%BD&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=-1&hd=undefined&latest=undefined&copyright=undefined&cs=401055480,1730089996&os=430094982,136452207&simid=3500117786,536006145&pn=35&rn=1&di=152020&ln=1308&fr=&fmq=1583718394597_R&fm=rs4&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=0&oriquery=%E5%9B%BE%E7%89%87&objurl=http%3A%2F%2Fpic32.nipic.com%2F20130812%2F13394215_151124335130_2.jpg&rpstart=0&rpnum=0&adpicid=0&force=undefined" alt="">
         <el-dropdown trigger="click" @command='clickMenu'>
             <!-- 显示内容 -->
             <!-- <span class="hand">{{userInfo.name}}</span> -->
