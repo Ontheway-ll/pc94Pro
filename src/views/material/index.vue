@@ -11,6 +11,8 @@
      2 给图标注册事件，绑定删除和收藏的方法
      3 传参，接收数据用row接收，
      4 实现逻辑 -->
+<!-- 预览大图，eleUI的走马灯和弹层Dialog 对话框
+     1  -->
 
   <!-- el-card组件，挂载到路由上 -->
   <el-card>
@@ -34,9 +36,9 @@
         <el-tab-pane label="全部素材" name="all">
           <!-- 内容,循环生成页面结构 循环list，v-for，循环生成谁就写在谁的标签上-->
           <div class="img-list">
-            <el-card class="img-card" v-for="item in list" :key="item.id">
-              <!-- 放置图片并赋值图片地址 -->
-              <img :src="item.url" alt="">
+            <el-card class="img-card" v-for="(item,index) in list" :key="item.id">
+              <!-- 放置图片并赋值图片地址@click="dialogVisible= true" -->
+              <img @click="selectImg(index)"  :src="item.url" alt="">
               <!-- space-around环绕 middle居中对齐-->
               <el-row class="operate" type="flex" align= "middle" justify="space-around">
                 <!-- 根据数据判断图标的颜色 -->
@@ -49,9 +51,9 @@
         <el-tab-pane label="收藏素材" name="collect">
           <!-- 内容 -->
           <div class="img-list">
-            <el-card class="img-card" v-for="item in list" :key="item.id">
+            <el-card class="img-card" v-for="(item,index) in list" :key="item.id">
               <!-- 放置图片并赋值图片地址 -->
-              <img :src="item.url" alt="">
+              <img @click="selectImg(index)"  :src="item.url" alt="">
             </el-card>
           </div>
         </el-tab-pane>
@@ -70,6 +72,17 @@
       @current-change="changePage">
 </el-pagination>
       </el-row>
+      <!-- 放置一个<el-dialog组件，需要设置visible属性，它接收Boolean，当为true时显示 Dialog。 -->
+          <!--                               @事件名后面还可以用简单的逻辑 -->
+        <el-dialog @opened="openEnd()" :visible="dialogVisible" @close="dialogVisible= false">
+          <!-- 放置一个走马灯组件el-carousel-item -->
+       <el-carousel ref="myCarousel" indicator-position="outside" height="400px">
+         <!-- 放置走马灯的循环项 -->
+         <el-carousel-item v-for="item in list " :key="item.id">
+           <img style="width:100%;height:100%" :src="item.url" />
+         </el-carousel-item>
+       </el-carousel>
+        </el-dialog>
   </el-card>
 </template>
 
@@ -83,10 +96,21 @@ export default {
         currentPage: 1, // 默认第一页
         total: 0, // 总页数
         pageSize: 8 // 每页多少条
-      }
+      },
+      dialogVisible: false, // 控制显示和隐藏true为显示
+      clickIndex: -1 // 点击的索引
     }
   },
   methods: {
+    openEnd () {
+      // 这个时候已经打开结束ref已经有值，可以通过ref进行设置
+      this.$refs.myCarousel.setActiveItem(this.clickIndex)
+    },
+    // 点击图片的时候调用
+    selectImg (index) {
+      this.clickIndex = index // 将索引赋值
+      this.dialogVisible = true // 打开索引
+    },
     // 收藏或者取消收藏的方法
     collectOrCancel (row) {
       this.$axios({
