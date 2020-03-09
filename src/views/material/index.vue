@@ -6,6 +6,11 @@
 <!--             上传图片
      1 放置好上传组件el-uoload,必须有action属性
      2 自定义上传的方法 http-request，选择文件后通过方法上传-->
+<!--              收藏和删除
+     1 通过点击和收藏和删除的图标，触发相应的动作
+     2 给图标注册事件，绑定删除和收藏的方法
+     3 传参，接收数据用row接收，
+     4 实现逻辑 -->
 
   <!-- el-card组件，挂载到路由上 -->
   <el-card>
@@ -34,8 +39,9 @@
               <img :src="item.url" alt="">
               <!-- space-around环绕 middle居中对齐-->
               <el-row class="operate" type="flex" align= "middle" justify="space-around">
-                <i class='el-icon-star-on'></i>
-                <i class='el-icon-delete-solid'></i>
+                <!-- 根据数据判断图标的颜色 -->
+                <i @click="collectOrCancel(item)" class='el-icon-star-on' :style="{color:item.is_collected?'red':'black'}" ></i>
+                <i @click="delMaterial(item)" class='el-icon-delete-solid'></i>
               </el-row>
             </el-card>
           </div>
@@ -81,6 +87,43 @@ export default {
     }
   },
   methods: {
+    // 收藏或者取消收藏的方法
+    collectOrCancel (row) {
+      this.$axios({
+        url: `/user/images/${row.id}`,
+        method: 'put',
+        // params: {},
+        data: {
+          collect: !row.is_collected
+        }
+      }).then(() => {
+        // 如果执行成功
+        this.getMaterial()
+      }).catch(() => {
+        // 如果失败
+        this.$message.error('操作失败')
+      })
+    },
+    // 删除图片的方法
+    delMaterial (row) {
+      // 删除前友好的提示
+      // confirm也就是promise
+      this.$confirm('您确定要删除该图片吗?', '提示').then(() => {
+        this.$axios({
+          url: `/user/images/${row.id}`,
+          method: 'delete'
+        }).then(() => {
+          // 删除成功重新加载数据
+          //  如果删除成功了 可以重新拉取数据 也可以 在前端删除  会在 移动端进行场景演示
+          // C 端场景  如果删除 或者修改数据 不会重新拉取数据 只会在前端修改对应的一条数据
+          // B 端场景 可以拉取数据
+          this.getMaterial()
+        }).catch(() => {
+          // 删除失败
+          this.$message.error('操作失败')
+        })
+      })
+    },
     // 定义一个上传组件的方法
     uploadImg (params) {
       // debugger
