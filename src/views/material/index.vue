@@ -3,6 +3,9 @@
      2 定义一个获取素材的方法，从接口中获取数据，并复制给data中list
      3 实例化之后，调用，获取素材数据
      4 需要实现将数据转化成页面结构 -->
+<!--             上传图片
+     1 放置好上传组件el-uoload,必须有action属性
+     2 自定义上传的方法 http-request，选择文件后通过方法上传-->
 
   <!-- el-card组件，挂载到路由上 -->
   <el-card>
@@ -12,6 +15,13 @@
           素材管理
       </template>
       </bread-crumb>
+      <!-- 上传图片素材 ,放置一个图片上传组件-->
+      <el-row type="flex" justify="end">
+        <el-upload :show-file-list="false" action="" :http-request="uploadImg">
+          <!-- 上传组件必须要有action属性，不传就报错 -->
+        <el-button type="primary" size="small">上传图片</el-button>
+        </el-upload>
+      </el-row>
       <!-- 放置标签页e-tabs -->
       <!-- v-model所绑定的值，就是当前激活的页签 ,切换页签需要监听页签的变化-->
       <el-tabs v-model="activeName" @tab-click="changeTab">
@@ -71,6 +81,24 @@ export default {
     }
   },
   methods: {
+    // 定义一个上传组件的方法
+    uploadImg (params) {
+      // debugger
+      // params.file是需要上传图片的文件
+      // 接口参数的类型要求是formdate
+      const data = new FormData()// 实例化一个formdate对象
+      data.append('image', params.file)// 加入文件参数
+      this.$axios({
+        url: '/user/images', // 请求地址
+        method: 'post', // 请求方式,上传或者新增
+        data// es6简写
+      }).then(() => {
+        // 如果成功重新获取数据
+        this.getMaterial()
+      }).catch(() => {
+        this.$message.error('上传素材失败')
+      })
+    },
     // 改方法会在页面切换改变时执行
     changePage (newPage) {
       // 传入一个新页
