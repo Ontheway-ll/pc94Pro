@@ -44,13 +44,16 @@
       <span>共找到1000条符合条件的内容</span>
     </el-row>
     <!-- 内容列表 -->
-    <div class="artical-item" v-for="item in 20" :key="item">
+    <div class="artical-item" v-for="item in list" :key="item.id.toString()">
       <div class="left">
-        <img src="../../assets/img/404.png" alt="">
+        <!-- 返回数组的图片有的有值有的没有值 ,没有搞个默认值，变量形式赋值-->
+        <!-- <img :src="item.cover.images.length?item.cover.images[0]: '../../assets/img/404.png'" alt=""> -->
+        <img :src="item.cover.images.length?item.cover.images[0]: defaultImg" alt="">
         <div class="info">
-          <span >祖国</span>
-         <el-tag class="tag">已发表</el-tag>
-         <span class="date">2020-03-10 17:05:00</span>
+          <span >{{item.title}}</span>
+               <!-- 只是改变显示的格式 可以用过滤器   两个过滤器 分别处理   显示文本 和 标签类型-->
+         <el-tag class="tag" :type="item.status | filterType">{{ item.status | filterStatus}}</el-tag>
+         <span class="date">{{item.pubdate}}</span>
         </div>
       </div>
       <div class="right">
@@ -74,7 +77,41 @@ export default {
         channel_id: null, // 表示没有任何的频道
         dateRange: []// 日期范围
       },
-      channels: [] // 专门接收频道的数据
+      channels: [], // 专门接收频道的数据
+      list: [], // 接收文章列表
+      // 给地址定义一个变量，以变量的形式才不会被编译成别的地址，
+      // 地址对应的文件变成了变量 在编译的时候会被拷贝到对应位置
+      defaultImg: require('../../assets/img/404.png')
+    }
+  },
+  // 专门处理显示格式的
+  filters: {
+    // 过滤器的第一个参数是value，别人传过来的值，必须return
+    // 文章状态 0-草稿，1-待审核，2-审核通过，3-审核失败
+    filterStatus (value) {
+      switch (value) {
+        case 0:
+          return '草稿'
+        case 1:
+          return '待审核'
+        case 2:
+          return '已发表'
+        case 3:
+          return '审核失败'
+      }
+    },
+    // 过滤器除了用在 插值表达中还可以用 v-bind 的表达式中
+    filterType (value) {
+      switch (value) {
+        case 0:
+          return 'warning'
+        case 1:
+          return 'info'
+        case 2:
+          return ''
+        case 3:
+          return 'danger'
+      }
     }
   },
   methods: {
@@ -86,11 +123,22 @@ export default {
         // 获取成功
         this.channels = result.data.channels
       })
+    },
+    // 获取文章列表
+    getArticles () {
+      this.$axios({
+        url: '/articles'
+        // params: {},
+        // data: {}
+      }).then(result => {
+        this.list = result.data.results// 文章列表
+      })
     }
   },
   created () {
     // 获取频道数据
     this.getChannels()
+    this.getArticles()// 手动调用获取文章数据
   }
 }
 </script>
