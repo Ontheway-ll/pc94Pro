@@ -43,6 +43,21 @@
     <el-row class="total" type="flex" align="middle">
       <span>共找到1000条符合条件的内容</span>
     </el-row>
+    <!-- 内容列表 -->
+    <div class="artical-item" v-for="item in 20" :key="item">
+      <div class="left">
+        <img src="../../assets/img/404.png" alt="">
+        <div class="info">
+          <span >祖国</span>
+         <el-tag class="tag">已发表</el-tag>
+         <span class="date">2020-03-10 17:05:00</span>
+        </div>
+      </div>
+      <div class="right">
+        <span><i class="el-icon-edit"></i> 修改</span>
+          <span><i class="el-icon-delete"></i> 删除</span>
+      </div>
+    </div>
   </el-card>
 </template>
 
@@ -85,6 +100,43 @@ export default {
   .total{
     height: 60px;
     border-bottom: 1px dashed #ccc;
+  }
+}
+.artical-item{
+  display: flex;
+  justify-content: space-between;//图片和右边的文字两头对齐
+  padding:20px 0;
+  border-bottom: 1px solid #ccc;
+  .left{
+    display: flex;
+    img{
+      width: 180px;
+      height: 100px;
+      border-radius: 4px;
+    }
+    .info{
+      display: flex;
+      flex-direction: column;
+    height: 100px;
+     justify-content: space-around;
+     margin-left: 10px;
+     .date{
+       font-size: 12px;
+       color: #ccc;
+     }
+     .tag{
+       width: 60px;
+       text-align: center;
+     }
+    }
+  }
+  .right{
+    span{
+      font-size: 12px;
+      margin-right: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
   }
 }
 </style>
