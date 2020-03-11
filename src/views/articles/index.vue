@@ -5,6 +5,8 @@
          对象里的每一项要和数据绑定，定义一个方法methods需要在data中
          有属性来接收数据
        2  需要在钩子函数中去调用函数 -->
+  <!-- 1 筛选功能，数据变化，组合条件，统一发送请求，第一种做法
+         监听每个组件的change事件  -->
 
   <el-card class="articles">
     <bread-crumb slot="header">
@@ -15,7 +17,9 @@
     <el-form style="padding-left:50px">
       <el-form-item label="文章状态">
         <!-- 放置单选框组 -->
-        <el-radio-group v-model="searchForm.status">
+        <!-- 第二种监听值的改变 -->
+        <!-- <el-radio-group v-model="searchForm.status" @change="changeCondition"> -->
+        <el-radio-group v-model="searchForm.status" >
           <!-- ：label 后面的值不加引号，需要的是nub类型 -->
           <el-radio :label="5">全部</el-radio>
           <el-radio :label="0">草稿</el-radio>
@@ -26,6 +30,8 @@
       </el-form-item>
       <el-form-item label="频道列表">
         <!-- 下拉选框 -->
+        <!-- <el-select @change="changeCondition" v-model="searchForm.channel_id"  placeholder="请选择频道" > -->
+          <!-- 第二种监听值的变化 -->
         <el-select v-model="searchForm.channel_id"  placeholder="请选择频道" >
           <!-- el-option是下拉选项的值，通过接口获取数据-->
              <!-- el-option是下拉的选项 label是显示值  value是绑定的值 -->
@@ -36,7 +42,9 @@
       <el-form-item label="时间选择">
   <!-- 日期范围选择组件  要设置type属性为 daterange-->
   <!-- 显示值和存储值的结构不一致 使用value-format指定绑定值的格式。 -->
-      <el-date-picker v-model="searchForm.dateRange" type="daterange" value-format="yyyy--MM-dd"></el-date-picker>
+      <!-- <el-date-picker @change="changeCondition" v-model="searchForm.dateRange" type="daterange" value-format="yyyy-MM-dd"></el-date-picker> -->
+     <!-- 第二种监听值的改变 -->
+      <el-date-picker v-model="searchForm.dateRange" type="daterange" value-format="yyyy-MM-dd"></el-date-picker>
       </el-form-item>
     </el-form>
     <!-- 文章主题结构，flex布局 middle垂直居中 -->
@@ -84,6 +92,19 @@ export default {
       defaultImg: require('../../assets/img/404.png')
     }
   },
+  // 第二种监听值的改变，监听data中的数据变化
+  watch: {
+    searchForm: {
+      deep: true, // 固定写法，深度监听
+      //  会深度检测searchForm中的数据变化
+      // handler也是一个固定写法 一旦数据发生任何变化 就会触发 更新
+      handler () {
+        // 统一用改变条件的方法
+        this.changeCondition()
+        // this指向当前组件实例
+      }
+    }
+  },
   // 专门处理显示格式的
   filters: {
     // 过滤器的第一个参数是value，别人传过来的值，必须return
@@ -115,6 +136,17 @@ export default {
     }
   },
   methods: {
+    // 改变了条件
+    changeCondition () {
+      // alert(this.searchForm.status)
+      const params = { // 5为不传
+        status: this.searchForm.status === 5 ? null : this.searchForm.status,
+        channel_id: this.searchForm.channel_id,
+        begin_pubdate: this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null,
+        end_pubdate: this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
+      }// 通过接口调入
+      this.getArticles(params)// 直接调用获取方法
+    },
     getChannels () {
       // 获取频道的数据
       this.$axios({
@@ -125,10 +157,10 @@ export default {
       })
     },
     // 获取文章列表
-    getArticles () {
+    getArticles (params) {
       this.$axios({
-        url: '/articles'
-        // params: {},
+        url: '/articles',
+        params// es6写法
         // data: {}
       }).then(result => {
         this.list = result.data.results// 文章列表
