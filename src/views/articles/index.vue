@@ -69,6 +69,17 @@
           <span><i class="el-icon-delete"></i> 删除</span>
       </div>
     </div>
+    <!-- 放置分页组件 -->
+    <el-row type="flex" justify="center" align="middle" style="height:80px">
+      <el-pagination
+       :total="page.total"
+       :page-size="page.pageSize"
+       :current-page="page.currentPage"
+       @current-change="changePage"
+        background layout="prev,pager,next">
+
+      </el-pagination>
+    </el-row>
   </el-card>
 </template>
 
@@ -76,6 +87,11 @@
 export default {
   data () {
     return {
+      page: {
+        total: 0,
+        pageSize: 10, // 接口要求每页10-50条之间
+        currentPage: 1
+      },
       // 定义一个表单数据对象
       searchForm: {
         // 数据
@@ -100,6 +116,7 @@ export default {
       // handler也是一个固定写法 一旦数据发生任何变化 就会触发 更新
       handler () {
         // 统一用改变条件的方法
+        this.page.currentPage = 1 // 只要条件变化 就变成第一页
         this.changeCondition()
         // this指向当前组件实例
       }
@@ -136,14 +153,21 @@ export default {
     }
   },
   methods: {
+    // 改变页码事件
+    changePage (newPage) {
+      this.page.currentPage = newPage// 最新页码
+      this.changeCondition()
+    },
     // 改变了条件
     changeCondition () {
       // alert(this.searchForm.status)
       const params = { // 5为不传
+        page: this.page.currentPage,
+        per_page: this.page.pageSize,
         status: this.searchForm.status === 5 ? null : this.searchForm.status,
         channel_id: this.searchForm.channel_id,
-        begin_pubdate: this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null,
-        end_pubdate: this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
+        begin_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null,
+        end_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
       }// 通过接口调入
       this.getArticles(params)// 直接调用获取方法
     },
@@ -164,6 +188,8 @@ export default {
         // data: {}
       }).then(result => {
         this.list = result.data.results// 文章列表
+        // 总数赋值给total
+        this.page.total = result.data.total_count
       })
     }
   },
