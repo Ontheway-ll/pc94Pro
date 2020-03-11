@@ -66,7 +66,7 @@
       </div>
       <div class="right">
         <span><i class="el-icon-edit"></i> 修改</span>
-          <span><i class="el-icon-delete"></i> 删除</span>
+          <span @click="delMaterial(item.id.toString())"><i class="el-icon-delete"></i> 删除</span>
       </div>
     </div>
     <!-- 放置分页组件 -->
@@ -153,6 +153,21 @@ export default {
     }
   },
   methods: {
+    delMaterial (id) {
+      // alert(1)
+      // 友好提示
+      this.$confirm('确定要删除', '提示').then(() => {
+        this.$axios({
+          url: `/articles/${id}`, // 地址 是  /articles/:target target 是文章id
+          method: 'DELETE'
+        }).then(() => {
+          // 如果删除成功重新获取数据
+          this.changeCondition()
+        }).catch(() => {
+          this.$message.error('删除失败')
+        })
+      })
+    },
     // 改变页码事件
     changePage (newPage) {
       this.page.currentPage = newPage// 最新页码
