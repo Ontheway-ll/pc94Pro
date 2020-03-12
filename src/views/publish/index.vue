@@ -3,36 +3,53 @@
       1 定义数据
       2 调用接口频道数据，加载到定义的数据
       3 绑定到页面，绑定到select组件    -->
+
+      <!--       发表文章逻辑实现
+      1 表单检验准备
+          @model 绑定 表单数据对象 :model="publishForm"
+          @rules 绑定 表单校验规则 :rules="publishRules"
+          @prop要设置el-form-item要校验的字段名
+          @需要对组件使用v-model双向绑定
+      2 表单规则编写
+          @对表单规则进行编写，required,必填项，pattern正则表达式，validator自定义校验函数，message提示消息
+           向input类型，不想一写内容就校验，二是离开在校验
+          @ 其他属性，trigger,触发类型，什么时候触发检验规则，默认值change（一发生改变就校验）
+            离开焦点校验blur
+      3 手动校验表单
+          @获取组件el-form组件实例，调用validate方法，通过ref来获取
+       -->
   <el-card>
       <bread-crumb slot="header">
             <template slot="title">发布文章</template>
       </bread-crumb>
       <!--表单组件 -->
-      <el-form label-width="100px">
-          <el-form-item label="标题">
-              <el-input style="width:50%" placeholder="输入标题"></el-input>
+      <el-form  ref="myForm" label-width="100px" :model="publishForm" :rules="publishRules">
+          <el-form-item label="标题" prop="title">
+              <el-input v-model="publishForm.title" style="width:50%" placeholder="输入标题"></el-input>
           </el-form-item>
-          <el-form-item label="内容">
-              <el-input type="textarea" :rows="4" placeholder="请输入内容"></el-input>
+          <el-form-item  label="内容" prop="content">
+              <el-input v-model="publishForm.content" type="textarea" :rows="4" placeholder="请输入内容"></el-input>
           </el-form-item>
-          <el-form-item label="封面">
+          <el-form-item label="封面" prop="cover">
               <!-- 单选框组 -->
-              <el-radio-group>
-                  <el-radio>单图</el-radio>
-                  <el-radio>三图</el-radio>
-                  <el-radio>无图</el-radio>
-                  <el-radio>自动</el-radio>
+              <!-- 封面单选组绑定的是cover下的type -->
+              <el-radio-group v-model="publishForm.cover.type">
+                  <!-- 给el-radio加上:label属性 -->
+                  <el-radio :label="1">单图</el-radio>
+                  <el-radio :label="3">三图</el-radio>
+                  <el-radio :label="0">无图</el-radio>
+                  <el-radio :label="-1">自动</el-radio>
               </el-radio-group>
           </el-form-item>
-          <el-form-item label="频道">
-              <el-select placeholder="请选择频道">
+          <el-form-item label="频道" prop="channel_id">
+              <el-select v-model="publishForm.channel_id"  placeholder="请选择频道">
                   <!-- 循环生成谁就在谁的标签上循环 -->
                   <!-- label显示值，value保存值 -->
                   <el-option :label="item.name" :value="item.id" v-for="item in channels" :key="item.id"></el-option>
               </el-select>
           </el-form-item>
           <el-form-item>
-               <el-button type="primary">发表</el-button>
+               <el-button @click="publish" type="primary">发表</el-button>
                 <el-button>存入草稿</el-button>
           </el-form-item>
       </el-form>
@@ -44,7 +61,24 @@
 export default {
   data () {
     return {
-      channels: [] // 接收频道数据
+      channels: [], // 接收频道数据
+      publishForm: {
+        title: '', // 文章标题
+        content: '', // 文章内容
+        cover: {
+          type: 0, // -1自动，0无图，1，1张，3，3张
+          images: []
+        },
+        channel_id: null// 频道ID为空
+      }, // 发布表单数据，里面有一些字段
+      //   发布表单的校验规则
+      publishRules: {
+        title: [{ required: true, message: '标题不能为空', trigger: 'blur' }, {
+          min: 5, max: 30, message: '标题在5-30个字符之间', trigger: 'blur'
+        }],
+        content: [{ required: true, message: '内容不能为空', trigger: 'blur' }],
+        channel_id: [{ required: true, message: '频道不能为空', trigger: 'blur' }]
+      }
     }
   },
   methods: {
@@ -55,6 +89,11 @@ export default {
       }).then(result => {
         this.channels = result.data.channels// 频道数据赋值给data的数组
       })
+    },
+    // 发布
+    publish () {
+      // 通过this.$refs获取el-form实例，调用validate方法
+      this.$refs.myForm.validate()
     }
   },
   created () {
