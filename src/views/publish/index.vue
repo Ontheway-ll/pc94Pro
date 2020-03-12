@@ -17,6 +17,7 @@
             离开焦点校验blur
       3 手动校验表单
           @获取组件el-form组件实例，调用validate方法，通过ref来获取
+      4 通过发表和草稿调用发布接口
        -->
   <el-card>
       <bread-crumb slot="header">
@@ -49,8 +50,8 @@
               </el-select>
           </el-form-item>
           <el-form-item>
-               <el-button @click="publish" type="primary">发表</el-button>
-                <el-button>存入草稿</el-button>
+               <el-button @click="publish(false)" type="primary">发表</el-button>
+                <el-button @click="publish(true)">存入草稿</el-button>
           </el-form-item>
       </el-form>
   </el-card>
@@ -91,9 +92,29 @@ export default {
       })
     },
     // 发布
-    publish () {
+    publish (fig) {
       // 通过this.$refs获取el-form实例，调用validate方法
-      this.$refs.myForm.validate()
+      // validate有两种方法，1 回调形式 2 promise
+      // 回调形式
+      //   this.$refs.myForm.validate(function (isOK) {
+      //     if (isOK) {
+      //       //   调用发布接口
+      //     }
+      //   })
+      this.$refs.myForm.validate().then(() => {
+        this.$axios({
+          url: '/articles',
+          method: 'post',
+          params: { draft: fig }, // query参数
+          data: this.publishForm
+        }).then(() => {
+          this.$message.success('发布成功')
+          //   发布成功后，编程式导航回到文章列表
+          this.$router.push('/home/articles')
+        }).catch(() => {
+          this.$message.error('发表失败')
+        })
+      })
     }
   },
   created () {
