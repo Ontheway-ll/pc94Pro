@@ -1,4 +1,8 @@
 <template>
+<!--             频道的数据加载步骤
+      1 定义数据
+      2 调用接口频道数据，加载到定义的数据
+      3 绑定到页面，绑定到select组件    -->
   <el-card>
       <bread-crumb slot="header">
             <template slot="title">发布文章</template>
@@ -21,7 +25,11 @@
               </el-radio-group>
           </el-form-item>
           <el-form-item label="频道">
-              <el-select placeholder="请选择频道"></el-select>
+              <el-select placeholder="请选择频道">
+                  <!-- 循环生成谁就在谁的标签上循环 -->
+                  <!-- label显示值，value保存值 -->
+                  <el-option :label="item.name" :value="item.id" v-for="item in channels" :key="item.id"></el-option>
+              </el-select>
           </el-form-item>
           <el-form-item>
                <el-button type="primary">发表</el-button>
@@ -29,11 +37,29 @@
           </el-form-item>
       </el-form>
   </el-card>
+
 </template>
 
 <script>
 export default {
-
+  data () {
+    return {
+      channels: [] // 接收频道数据
+    }
+  },
+  methods: {
+    //   获取频道数据
+    getChannels () {
+      this.$axios({
+        url: '/channels'
+      }).then(result => {
+        this.channels = result.data.channels// 频道数据赋值给data的数组
+      })
+    }
+  },
+  created () {
+    this.getChannels()// 获取接收到的频道数据
+  }
 }
 </script>
 
