@@ -65,7 +65,11 @@
         </div>
       </div>
       <div class="right">
-        <span><i class="el-icon-edit"></i> 修改</span>
+        <!-- 第一种是事件绑定方法 -->
+        <!-- <span @click="topublish"><i class="el-icon-edit"></i> 修改</span> -->
+        <!-- 第二种，简单逻辑，没有this，插值表达式也不用this -->
+        <span @click="$router.push(`/home/publish/${item.id.toString()}`)"><i class="el-icon-edit"></i> 修改</span>
+        <!-- 传递参数，传递要删除的id有可能是大数字类型 -->
           <span @click="delMaterial(item.id.toString())"><i class="el-icon-delete"></i> 删除</span>
       </div>
     </div>
@@ -153,6 +157,10 @@ export default {
     }
   },
   methods: {
+    // 跳转发布页面
+    // topublish () {
+    //   this.$router.push('/home/publish')
+    // },
     delMaterial (id) {
       // alert(1)
       // 友好提示

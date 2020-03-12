@@ -32,7 +32,7 @@ const routes = [
         path: 'articles',
         component: () => import('@/views/articles')
       }, {
-        path: 'publish',
+        path: 'publish/:articalId?',
         component: () => import('@/views/publish')
       }
     ]

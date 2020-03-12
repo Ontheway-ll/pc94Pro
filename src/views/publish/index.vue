@@ -18,6 +18,10 @@
       3 手动校验表单
           @获取组件el-form组件实例，调用validate方法，通过ref来获取
       4 通过发表和草稿调用发布接口
+      5 文章列表和发表文章串联起来，发表文章承载两个功能，新增，和修改文章
+        点击修改文章跳到文章列表，在文章列表页面跳转的同时需要把ID也传过去，
+        路由传值，第一：动态路由传值给路由规则加参数path:/use/参数名，传递参数<router-link to="/user/123",取参数this.$route.params参数名
+                  第二 query传值，地址中的？属性=值，，this.$route.query.属性
        -->
   <el-card>
       <bread-crumb slot="header">
