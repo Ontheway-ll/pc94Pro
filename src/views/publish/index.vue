@@ -25,7 +25,10 @@
                   第二 query传值，地址中的？属性=值，，this.$route.query.属性
       6 跳转到发布文章页面，根据ID把当前的数据加载出来
       7 封面图片， 根据cover里的type类型来控制，images的长度变化，监听单选组值的改变，根据对应的值，生成对应的数组
-       -->
+        数组生成=> 封装封面组件实现，在components下新建publish文件下新建cover-image，注册组件，使用UI的coverimage
+        cover-image是用来展示页面的，需要把封面数据传给cover-image =>父组件传子组件传值，给谁传就在谁的标签上写属性
+         :list=publishForm.cover.images,子组件接收，props['list'] => 在cover-image中根据images的长度进行循环，生成
+         和长度对应的封面块-->
   <el-card>
       <bread-crumb slot="header">
             <template slot="title">发布文章</template>
@@ -39,7 +42,6 @@
               <!-- 把el-input 替换富文本编辑器quill-editor -->
               <quill-editor v-model="publishForm.content" style="height:300px"></quill-editor>
           </el-form-item>
-          {{publishForm.cover.images }}
           <el-form-item label="封面" prop="cover" style="margin-top:120px">
               <!-- 单选框组 -->
               <!-- 封面单选组绑定的是cover下的type -->
@@ -51,6 +53,8 @@
                   <el-radio :label="-1">自动</el-radio>
               </el-radio-group>
           </el-form-item>
+          <!-- 封面组件 -->
+          <cover-image :list="publishForm.cover.images"></cover-image>
           <el-form-item label="频道" prop="channel_id">
               <el-select v-model="publishForm.channel_id"  placeholder="请选择频道">
                   <!-- 循环生成谁就在谁的标签上循环 -->

@@ -4,6 +4,7 @@ import LayoutAside from './home/layout-aside'// 引入
 import LayoutHeader from './home/layout-header'
 import BreadCrumb from './common/breadcrumb.vue'// 引入面包屑组件
 import VueQuillEditor from 'vue-quill-editor'
+import CoverImage from './publish/cover-image.vue'
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -15,5 +16,6 @@ export default {
     Vue.component('layout-header', LayoutHeader)// 全局注册
     Vue.component('bread-crumb', BreadCrumb)// 全局注册面包屑组件
     Vue.use(VueQuillEditor) // 注册富文本编辑器可以在任意位置使用
+    Vue.component('cover-image', CoverImage)// 注册封面组件
   }
 }
