@@ -28,7 +28,9 @@
         数组生成=> 封装封面组件实现，在components下新建publish文件下新建cover-image，注册组件，使用UI的coverimage
         cover-image是用来展示页面的，需要把封面数据传给cover-image =>父组件传子组件传值，给谁传就在谁的标签上写属性
          :list=publishForm.cover.images,子组件接收，props['list'] => 在cover-image中根据images的长度进行循环，生成
-         和长度对应的封面块-->
+         和长度对应的封面块 处理图片路径，，给图片注册点击事件，UI弹层组件
+         再次封装一个组件赋值选择图片和上传图片   点击图片将图片的地址传给上层组件显示
+        子传父自定义事件this.$emit(事件名，参数)-->
   <el-card>
       <bread-crumb slot="header">
             <template slot="title">发布文章</template>
@@ -54,7 +56,7 @@
               </el-radio-group>
           </el-form-item>
           <!-- 封面组件 -->
-          <cover-image :list="publishForm.cover.images"></cover-image>
+          <cover-image @selectTwoimg="receiveImg" :list="publishForm.cover.images"></cover-image>
           <el-form-item label="频道" prop="channel_id">
               <el-select v-model="publishForm.channel_id"  placeholder="请选择频道">
                   <!-- 循环生成谁就在谁的标签上循环 -->
@@ -96,6 +98,16 @@ export default {
     }
   },
   methods: {
+    //   接收cover-image传递过来的数据
+    receiveImg (url, index) {
+    //   alert(url)接收到了传递过来的封面数据
+      // 接下来需要更新 images数组
+      // but!!!!  仅仅拿到了一个url地址, 但是images可能有1条 可能有3条 单单有地址 并不足以 知道要更新哪一条记录
+      //  有索引 有 url了 可以改变 数据了
+    //   alert(index)
+      this.publishForm.cover.images.splice(index, 1, url)
+      // splice(索引, 要删除的个数, 替换的个数)
+    },
     //      监听图片变化类型
     changeTpye () {
     //   alert(this.publishForm.cover.type)
