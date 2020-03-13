@@ -21,7 +21,9 @@
       5 文章列表和发表文章串联起来，发表文章承载两个功能，新增，和修改文章
         点击修改文章跳到文章列表，在文章列表页面跳转的同时需要把ID也传过去，
         路由传值，第一：动态路由传值给路由规则加参数path:/use/参数名，传递参数<router-link to="/user/123",取参数this.$route.params参数名
+                        先给路由规则加个参数，对修改按钮事件处理
                   第二 query传值，地址中的？属性=值，，this.$route.query.属性
+      6 跳转到发布文章页面，根据ID把当前的数据加载出来
        -->
   <el-card>
       <bread-crumb slot="header">
@@ -87,6 +89,14 @@ export default {
     }
   },
   methods: {
+    //   获取文章详情数据
+    getarticleByid (id) {
+      this.$axios({
+        url: `/articles/${id}`
+      }).then(result => {
+        this.publishForm = result.data
+      })
+    },
     //   获取频道数据
     getChannels () {
       this.$axios({
@@ -105,24 +115,65 @@ export default {
       //       //   调用发布接口
       //     }
       //   })
+
       this.$refs.myForm.validate().then(() => {
+        // 判断点击发表的时候是通过修改发表还是新增发表
+        const { articleId } = this.$route.params// 如果ID不为空就是修改，为空就是发布文章
+        //    发布正式文章和发布草稿文章
+        //    修改正式文章和修改草稿文章
         this.$axios({
-          url: '/articles',
-          method: 'post',
-          params: { draft: fig }, // query参数
+          url: articleId ? `/articles/${articleId}` : '/articles',
+          method: articleId ? 'put' : 'post',
+          params: { draft: fig },
           data: this.publishForm
         }).then(() => {
-          this.$message.success('发布成功')
+          this.$message.success('操作成功')
           //   发布成功后，编程式导航回到文章列表
           this.$router.push('/home/articles')
         }).catch(() => {
-          this.$message.error('发表失败')
+          this.$message.error('操作失败')
         })
+
+        //     if (articleId) {
+        //       this.$axios({
+        //         // 修改
+        //         url: `/articles/${articleId}`,
+        //         method: 'put',
+        //         params: { draft: fig },
+        //         data: this.publishForm
+        //       }).then(() => {
+        //         this.$message.success('发布成功')
+        //         //   发布成功后，编程式导航回到文章列表
+        //         this.$router.push('/home/articles')
+        //       }).catch(() => {
+        //         this.$message.error('发表失败')
+        //       })
+        //     } else {
+        //       this.$axios({
+        //         url: '/articles',
+        //         method: 'post',
+        //         params: { draft: fig }, // query参数
+        //         data: this.publishForm
+        //       }).then(() => {
+        //         this.$message.success('发布成功')
+        //         //   发布成功后，编程式导航回到文章列表
+        //         this.$router.push('/home/articles')
+        //       }).catch(() => {
+        //         this.$message.error('发表失败')
+        //       })
+        //     }
       })
     }
   },
+  // 判断是否存在文章ID，如果存在获取数据
   created () {
     this.getChannels()// 获取接收到的频道数据
+    const { articleId } = this.$route.params // 结构赋值
+    // if (articleId) {
+    //   this.getarticleByid(articleId)
+    // }
+    // 第二种写法
+    articleId && this.getarticleByid(articleId)// 如果前面为true就会执行后面的
   }
 }
 </script>
