@@ -35,9 +35,10 @@
               <el-input v-model="publishForm.title" style="width:50%" placeholder="输入标题"></el-input>
           </el-form-item>
           <el-form-item  label="内容" prop="content">
-              <el-input v-model="publishForm.content" type="textarea" :rows="4" placeholder="请输入内容"></el-input>
+              <!-- 把el-input 替换富文本编辑器quill-editor -->
+              <quill-editor v-model="publishForm.content" style="height:300px"></quill-editor>
           </el-form-item>
-          <el-form-item label="封面" prop="cover">
+          <el-form-item label="封面" prop="cover" style="margin-top:120px">
               <!-- 单选框组 -->
               <!-- 封面单选组绑定的是cover下的type -->
               <el-radio-group v-model="publishForm.cover.type">
