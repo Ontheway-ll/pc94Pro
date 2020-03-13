@@ -24,6 +24,7 @@
                         先给路由规则加个参数，对修改按钮事件处理
                   第二 query传值，地址中的？属性=值，，this.$route.query.属性
       6 跳转到发布文章页面，根据ID把当前的数据加载出来
+      7 封面图片， 根据cover里的type类型来控制，images的长度变化，监听单选组值的改变，根据对应的值，生成对应的数组
        -->
   <el-card>
       <bread-crumb slot="header">
@@ -38,10 +39,11 @@
               <!-- 把el-input 替换富文本编辑器quill-editor -->
               <quill-editor v-model="publishForm.content" style="height:300px"></quill-editor>
           </el-form-item>
+          {{publishForm.cover.images }}
           <el-form-item label="封面" prop="cover" style="margin-top:120px">
               <!-- 单选框组 -->
               <!-- 封面单选组绑定的是cover下的type -->
-              <el-radio-group v-model="publishForm.cover.type">
+              <el-radio-group v-model="publishForm.cover.type" @change="changeTpye">
                   <!-- 给el-radio加上:label属性 -->
                   <el-radio :label="1">单图</el-radio>
                   <el-radio :label="3">三图</el-radio>
@@ -90,6 +92,17 @@ export default {
     }
   },
   methods: {
+    //      监听图片变化类型
+    changeTpye () {
+    //   alert(this.publishForm.cover.type)
+      if (this.publishForm.cover.type === 1) {
+        this.publishForm.cover.images = ['']
+      } else if (this.publishForm.cover.type === 3) {
+        this.publishForm.cover.images = ['', '', '']
+      } else {
+        this.publishForm.cover.images = []
+      }
+    },
     //   获取文章详情数据
     getarticleByid (id) {
       this.$axios({
